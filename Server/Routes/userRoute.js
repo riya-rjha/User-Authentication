@@ -86,6 +86,8 @@ userRouter.post("/login", async (req, res) => {
       expiresIn: "1h",
     });
 
+    console.log(token);
+
     res.cookie("access_token", token, {
       httpOnly: true,
       maxAge: 3600000, // 1 hour in milliseconds

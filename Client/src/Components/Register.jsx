@@ -1,20 +1,26 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import { backendURL } from './BackendURL';
+import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { backendURL } from "./BackendURL";
 
 const Register = () => {
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`${backendURL}auth/register`, { username, email, password });
-      navigate('/');
+      const response = await axios.post(
+        `${backendURL}auth/register`,
+        { username, email, password },
+        {
+          withCredentials: true,
+        }
+      );
+      navigate("/");
       console.log(response.data);
     } catch (error) {
       console.error("An error occurred while registering:", error);

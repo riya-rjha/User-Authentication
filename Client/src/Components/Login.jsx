@@ -13,10 +13,16 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`${backendURL}auth/login`, {
-        username,
-        password,
-      });
+      const response = await axios.post(
+        `${backendURL}auth/login`,
+        {
+          username,
+          password,
+        },
+        {
+          withCredentials: true,
+        }
+      );
       console.log(response.data);
       setLogged(true);
     } catch (error) {
