@@ -11,7 +11,7 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: process.env.FRONTENDURL, // Update to your frontend URL if different
+    origin: process.env.FRONTEND_URL, // Update to your frontend URL if different
     credentials: true,
   })
 );
