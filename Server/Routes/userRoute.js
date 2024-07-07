@@ -41,16 +41,21 @@ userRouter.post("/register", async (req, res) => {
       email,
       password: hashedPwd,
     });
+
     const token = jwt.sign({ id: newUser._id }, process.env.jwt_secretKey, {
       expiresIn: "1h",
     });
 
-    res.cookie("access_token", token, {
-      httpOnly: true,
-    });
+    // res.cookie("access_token", token, {
+    //   httpOnly: true,
+    //   maxAge: 3600000, // 1 hour in milliseconds
+    // });
 
-    await newUser.save();
+    const maxAge = 3600 * 1000; // 1 hour in milliseconds
+    const cookieHeader = `access_token=${token}; HttpOnly; Max-Age=${maxAge}; Path=/`;
+    res.setHeader("Set-Cookie", cookieHeader);
 
+    // Return success response
     return res.status(202).json({
       message: "User successfully registered",
       newUser,
@@ -66,11 +71,16 @@ userRouter.post("/login", async (req, res) => {
   const { username, password } = req.body;
   try {
     const user = await userModel.findOne({ username });
+
+    if (!user) {
+      return res.status(401).json("User does not exist");
+    }
+
     const isPasswordTrue = await bcrypt.compare(password, user.password);
 
-    if (!isPasswordTrue) return res.status(401).json("Incorrect password");
-
-    if (!user) return res.status(401).json("User does not exist");
+    if (!isPasswordTrue) {
+      return res.status(401).json("Incorrect password");
+    }
 
     const token = jwt.sign({ id: user._id }, process.env.jwt_secretKey, {
       expiresIn: "1h",
@@ -78,11 +88,13 @@ userRouter.post("/login", async (req, res) => {
 
     res.cookie("access_token", token, {
       httpOnly: true,
+      maxAge: 3600000, // 1 hour in milliseconds
     });
 
     return res.status(202).json("Login successful");
   } catch (error) {
-    return res.status(501).json("An error occurred while logging the user");
+    console.error("Error while logging in:", error);
+    return res.status(501).json("An error occurred while logging in");
   }
 });
 
